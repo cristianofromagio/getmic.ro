@@ -9,32 +9,32 @@ on:
 
 jobs:
 
-  test:
-    name: Test on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, ubuntu-16.04, macOS-latest, windows-latest]
-    steps:
-    - name: Check out code
-      uses: actions/checkout@v1
+  # test:
+  #   name: Test on ${{ matrix.os }}
+  #   runs-on: ${{ matrix.os }}
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       os: [ubuntu-latest, ubuntu-16.04, macOS-latest, windows-latest]
+  #   steps:
+  #   - name: Check out code
+  #     uses: actions/checkout@v1
 
-    - name: Test
-      run: ./ci/runTest.sh
-      shell: bash
+  #   - name: Test
+  #     run: ./ci/runTest.sh
+  #     shell: bash
 
-  lint:
-    name: Lint
-    runs-on: ubuntu-latest
-    steps:
-    - name: Check out code
-      uses: actions/checkout@v1
+  # lint:
+  #   name: Lint
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - name: Check out code
+  #     uses: actions/checkout@v1
 
-    - name: Lint
-      run: |
-        sudo apt-get update && sudo apt-get install -y shellcheck
-        ./ci/runLint.sh
+  #   - name: Lint
+  #     run: |
+  #       sudo apt-get update && sudo apt-get install -y shellcheck
+  #       ./ci/runLint.sh
 
   test_vagrant:
     name: Test on ${{ matrix.vagrant_dir }} with Vagrant
@@ -45,11 +45,11 @@ jobs:
         vagrant_dir:
         - testboxes/freebsd32
         - testboxes/freebsd64
-        - testboxes/linux32
-        - testboxes/netbsd32
-        - testboxes/netbsd64
-        - testboxes/openbsd32
-        - testboxes/openbsd64
+        # - testboxes/linux32
+        # - testboxes/netbsd32
+        # - testboxes/netbsd64
+        # - testboxes/openbsd32
+        # - testboxes/openbsd64
     steps:
     - name: Check out code
       uses: actions/checkout@v1
@@ -57,57 +57,57 @@ jobs:
     - name: Test
       run: ./ci/runVagrantTest.sh ${{ matrix.vagrant_dir }}
 
-  test_docker:
-    name: Test on ${{ matrix.docker_image }} with Bash in Docker
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        docker_image:
-        - arm32v7/ubuntu:bionic
-        - arm64v8/ubuntu:bionic
-        - bash:5.0
-        - bash:4.4
-        - bash:4.3
-        - bash:4.2
-        - bash:4.1
-        - bash:4.0
-        - bash:3.2
-        - bash:3.1
-        - bash:3.0
-    steps:
-    - name: Check out code
-      uses: actions/checkout@v1
+  # test_docker:
+  #   name: Test on ${{ matrix.docker_image }} with Bash in Docker
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       docker_image:
+  #       - arm32v7/ubuntu:bionic
+  #       - arm64v8/ubuntu:bionic
+  #       - bash:5.0
+  #       - bash:4.4
+  #       - bash:4.3
+  #       - bash:4.2
+  #       - bash:4.1
+  #       - bash:4.0
+  #       - bash:3.2
+  #       - bash:3.1
+  #       - bash:3.0
+  #   steps:
+  #   - name: Check out code
+  #     uses: actions/checkout@v1
 
-    - name: Test
-      run: ./ci/runDockerTest.sh ${{ matrix.docker_image }} bash
+  #   - name: Test
+  #     run: ./ci/runDockerTest.sh ${{ matrix.docker_image }} bash
 
-  test_shells:
-    name: Test alternate shell ${{ matrix.shell }} on Ubuntu docker
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        shell:
-        - zsh
-        - dash
-        - ksh
-    steps:
-    - name: Check out code
-      uses: actions/checkout@v1
+  # test_shells:
+  #   name: Test alternate shell ${{ matrix.shell }} on Ubuntu docker
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       shell:
+  #       - zsh
+  #       - dash
+  #       - ksh
+  #   steps:
+  #   - name: Check out code
+  #     uses: actions/checkout@v1
 
-    - name: Test
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y ${{ matrix.shell }}
-        ./ci/runTest.sh ${{ matrix.shell }}
+  #   - name: Test
+  #     run: |
+  #       sudo apt-get update
+  #       sudo apt-get install -y ${{ matrix.shell }}
+  #       ./ci/runTest.sh ${{ matrix.shell }}
 
-  test_alpine:
-    name: Test busybox on alpine
-    runs-on: ubuntu-latest
-    steps:
-    - name: Check out code
-      uses: actions/checkout@v1
+  # test_alpine:
+  #   name: Test busybox on alpine
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - name: Check out code
+  #     uses: actions/checkout@v1
 
-    - name: Test
-      run: ./ci/runDockerTest.sh alpine:latest sh
+  #   - name: Test
+  #     run: ./ci/runDockerTest.sh alpine:latest sh

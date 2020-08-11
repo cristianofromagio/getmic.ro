@@ -74,7 +74,8 @@ Vagrant.configure("2") do |config|
   #   ln -sf /lib/libc.so.7 /usr/lib/libdl.so.1
   # SHELL
   config.vm.provision "shell", inline: <<-SHELL
-    pkg update -f
+    pkg-static install -f pkg
+    pkg upgrade -f
     pkg install -y bash
     pkg install -y curl
   SHELL
