@@ -1,6 +1,15 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
+$script = <<-'SCRIPT'
+  $ErrorActionPreference = "Stop"
+  iex (wget 'https://chocolatey.org/install.ps1' -UseBasicParsing)
+  choco feature disable --name showDownloadProgress
+  choco install curl --force -y
+  choco install cygwin --params "/NoStartMenu" --force -y
+  refreshenv
+SCRIPT
+
 # All Vagrant configuration is done below. The "2" in Vagrant.configure
 # configures the configuration version (we support older styles for
 # backwards compatibility). Please don't change it unless you know what
@@ -20,6 +29,7 @@ Vagrant.configure("2") do |config|
 
   config.winrm.username = "vagrant"
   config.winrm.password = "vagrant"
+  config.winrm.timeout = 180
 
   config.vm.guest = :windows
   config.windows.halt_timeout = 15
@@ -74,13 +84,17 @@ Vagrant.configure("2") do |config|
   # Enable provisioning with a shell script. Additional provisioners such as
   # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
   # documentation for more information about their specific syntax and use.
-  config.vm.provision "shell", inline: <<-SHELL
-    $ErrorActionPreference = "Stop"
-    iex (wget 'https://chocolatey.org/install.ps1' -UseBasicParsing)
-    refreshenv
-    choco feature disable --name showDownloadProgress
-    choco install curl --force -y
-    choco install cygwin --params "/NoStartMenu" --force -y
-    refreshenv
-  SHELL
+  # config.vm.provision "shell", inline: <<-SHELL
+  #   $ErrorActionPreference = "Stop"
+  #   iex (wget 'https://chocolatey.org/install.ps1' -UseBasicParsing)
+  #   choco feature disable --name showDownloadProgress
+  #   choco install curl --force -y
+  #   choco install cygwin --params "/NoStartMenu" --force -y
+  #   refreshenv
+  # SHELL
+
+  config.vm.provision "shell" do |s|
+    s.privileged = "true"
+    s.inline = $script
+  end
 end
