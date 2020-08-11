@@ -12,7 +12,17 @@ Vagrant.configure("2") do |config|
 
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://atlas.hashicorp.com/search.
-  config.vm.box = "gusztavvargadr/windows-10"
+  config.vm.box = "StefanScherer/windows_10"
+  config.vm.network :forwarded_port, guest: 5985, host: 5985, id: "winrm", auto_correct: true
+
+  config.vm.hostname = "win10"
+  config.vm.communicator = "winrm"
+
+  config.winrm.username = "vagrant"
+  config.winrm.password = "vagrant"
+
+  config.vm.guest = :windows
+  config.windows.halt_timeout = 15
 
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
@@ -66,6 +76,9 @@ Vagrant.configure("2") do |config|
   # documentation for more information about their specific syntax and use.
   config.vm.provision "shell", inline: <<-SHELL
     $ErrorActionPreference = "Stop"
+    iex (wget 'https://chocolatey.org/install.ps1' -UseBasicParsing)
+    refreshenv
+    choco feature disable --name showDownloadProgress
     choco install curl --force -y
     choco install cygwin --params "/NoStartMenu" --force -y
     refreshenv
