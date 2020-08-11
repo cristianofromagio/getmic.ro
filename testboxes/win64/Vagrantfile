@@ -1,50 +1,73 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-$script = <<SCRIPT
-Write-Host "Enabling WSL 2 feature."
-Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux -NoRestart
-Enable-WindowsOptionalFeature -Online -FeatureName VirtualMachinePlatform -NoRestart
-Write-Host "Enabling Hyper-V and Containers feature."
-Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All -NoRestart
-Enable-WindowsOptionalFeature -Online -FeatureName Containers -All -NoRestart
-. sc.exe config winrm start= delayed-auto
-SCRIPT
-
-$script2 = <<SCRIPT2
-. sc.exe config winrm start= auto
-Write-Host "Downloading Docker Desktop"
-$ExeFile = "$env:USERPROFILE/Downloads/docker-desktop-installer.exe"
-curl.exe -o "$ExeFile" https://download.docker.com/win/stable/Docker%20Desktop%20Installer.exe
-Write-Host "Installing Docker Desktop"
-Start-Process -FilePath $ExeFile -ArgumentList install, --quiet -Wait
-Write-Host "Installing WSL Linux kernel update"
-curl.exe -o wsl_update_x64.msi https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x64.msi
-Start-Process msiexec.exe -Wait -ArgumentList '/I wsl_update_x64.msi /qn'
-Remove-Item wsl_update_x64.msi
-Write-Host "Set WSL default version 2"
-wsl --set-default-version 2
-mkdir c:\\distro
-cd c:\\distro
-Write-Host "Downloading Ubuntu 20.04 WSL distro"
-curl.exe -L -o ubuntu2004.tar.gz https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64-wsl.rootfs.tar.gz
-wsl --import Ubuntu20.04 C:\\distro\\ubuntu20.04 ubuntu2004.tar.gz --version 2
-Remove-Item ubuntu2004.tar.gz
-SCRIPT2
-
+# All Vagrant configuration is done below. The "2" in Vagrant.configure
+# configures the configuration version (we support older styles for
+# backwards compatibility). Please don't change it unless you know what
+# you're doing.
 Vagrant.configure("2") do |config|
-  config.vm.box = "StefanScherer/windows_10"
+  # The most common configuration options are documented and commented below.
+  # For a complete reference, please see the online documentation at
+  # https://docs.vagrantup.com.
 
-  config.vm.communicator = "winrm"
+  # Every Vagrant development environment requires a box. You can search for
+  # boxes at https://atlas.hashicorp.com/search.
+  config.vm.box = "gusztavvargadr/windows-10"
 
-  config.winrm.username = "vagrant"
-  config.winrm.password = "vagrant"
+  # Disable automatic box update checking. If you disable this, then
+  # boxes will only be checked for updates when the user runs
+  # `vagrant box outdated`. This is not recommended.
+  # config.vm.box_check_update = false
 
-  config.vm.guest = :windows
-  config.windows.halt_timeout = 15
+  # Create a forwarded port mapping which allows access to a specific port
+  # within the machine from a port on the host machine. In the example below,
+  # accessing "localhost:8080" will access port 80 on the guest machine.
+  # config.vm.network "forwarded_port", guest: 80, host: 8080
 
-  config.vm.provision "shell", inline: $script, privileged: false
-  config.vm.provision "reload"
-  config.vm.provision "shell", inline: $script2, privileged: true, powershell_elevated_interactive: true
+  # Create a private network, which allows host-only access to the machine
+  # using a specific IP.
+  # config.vm.network "private_network", ip: "192.168.33.10"
 
+  # Create a public network, which generally matched to bridged network.
+  # Bridged networks make the machine appear as another physical device on
+  # your network.
+  # config.vm.network "public_network"
+
+  # Share an additional folder to the guest VM. The first argument is
+  # the path on the host to the actual folder. The second argument is
+  # the path on the guest to mount the folder. And the optional third
+  # argument is a set of non-required options.
+  # config.vm.synced_folder "../data", "/vagrant_data"
+
+  # Provider-specific configuration so you can fine-tune various
+  # backing providers for Vagrant. These expose provider-specific options.
+  # Example for VirtualBox:
+  #
+  # config.vm.provider "virtualbox" do |vb|
+    # Display the VirtualBox GUI when booting the machine
+    # vb.gui = true
+
+    # Customize the amount of memory on the VM:
+    # vb.memory = "256"
+  # end
+  #
+  # View the documentation for the provider you are using for more
+  # information on available options.
+
+  # Define a Vagrant Push strategy for pushing to Atlas. Other push strategies
+  # such as FTP and Heroku are also available. See the documentation at
+  # https://docs.vagrantup.com/v2/push/atlas.html for more information.
+  # config.push.define "atlas" do |push|
+  #   push.app = "YOUR_ATLAS_USERNAME/YOUR_APPLICATION_NAME"
+  # end
+
+  # Enable provisioning with a shell script. Additional provisioners such as
+  # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
+  # documentation for more information about their specific syntax and use.
+  config.vm.provision "shell", inline: <<-SHELL
+    $ErrorActionPreference = "Stop"
+    choco install curl --force -y
+    choco install cygwin --params "/NoStartMenu" --force -y
+    refreshenv
+  SHELL
 end
