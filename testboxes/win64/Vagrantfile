@@ -8,33 +8,33 @@ $installChocolateyCygwin = <<-'SCRIPT'
   choco install cygwin --params "/NoStartMenu" --force -y
 SCRIPT
 
-$installSsh = <<-'SCRIPT'
-  Write-Host "Enable Developer Mode"
-  # Create AppModelUnlock if it doesn't exist, required for enabling Developer Mode
-  $RegistryKeyPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock"
-  if (-not(Test-Path -Path $RegistryKeyPath)) {
-    New-Item -Path $RegistryKeyPath -ItemType Directory -Force
-  }
+# $installSsh = <<-'SCRIPT'
+#   Write-Host "Enable Developer Mode"
+#   # Create AppModelUnlock if it doesn't exist, required for enabling Developer Mode
+#   $RegistryKeyPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock"
+#   if (-not(Test-Path -Path $RegistryKeyPath)) {
+#     New-Item -Path $RegistryKeyPath -ItemType Directory -Force
+#   }
 
-  # Add registry value to enable Developer Mode
-  New-ItemProperty -Path $RegistryKeyPath -Name AllowDevelopmentWithoutDevLicense -PropertyType DWORD -Value 1
+#   # Add registry value to enable Developer Mode
+#   New-ItemProperty -Path $RegistryKeyPath -Name AllowDevelopmentWithoutDevLicense -PropertyType DWORD -Value 1
 
-  $cap = Get-WindowsCapability -Online | ? Name -like "OpenSSH.Server*"
-  if (($cap.count -ne 0) -and ($cap[0].State -ne "Installed")) {
-    Write-Host "Install OpenSSH Server"
-    # Install the OpenSSH Server
-    Add-WindowsCapability -Online -Name OpenSSH.Server~~~~0.0.1.0
-    # Install the OpenSSHUtils helper module, which is needed to fix the ACL for ths host keys.
-    # Install-Module -Force OpenSSHUtils
+#   $cap = Get-WindowsCapability -Online | ? Name -like "OpenSSH.Server*"
+#   if (($cap.count -ne 0) -and ($cap[0].State -ne "Installed")) {
+#     Write-Host "Install OpenSSH Server"
+#     # Install the OpenSSH Server
+#     Add-WindowsCapability -Online -Name OpenSSH.Server~~~~0.0.1.0
+#     # Install the OpenSSHUtils helper module, which is needed to fix the ACL for ths host keys.
+#     # Install-Module -Force OpenSSHUtils
 
-    Write-Host "Enable OpenSSH Server"
-    Start-Service sshd
+#     Write-Host "Enable OpenSSH Server"
+#     Start-Service sshd
 
-    Write-Host "Open OpenSSH Server port on firewall"
-    # Open firewall port
-    New-NetFirewallRule -Protocol TCP -LocalPort 22 -Direction Inbound -Action Allow -DisplayName SSH
-  }
-SCRIPT
+#     Write-Host "Open OpenSSH Server port on firewall"
+#     # Open firewall port
+#     New-NetFirewallRule -Protocol TCP -LocalPort 22 -Direction Inbound -Action Allow -DisplayName SSH
+#   }
+# SCRIPT
 
 # All Vagrant configuration is done below. The "2" in Vagrant.configure
 # configures the configuration version (we support older styles for
@@ -51,7 +51,8 @@ Vagrant.configure("2") do |config|
   config.vm.network :forwarded_port, guest: 5985, host: 5985, id: "winrm", auto_correct: true
 
   config.vm.hostname = "win10"
-  config.vm.communicator = "winrm"
+  config.vm.communicator = "winssh"
+  config.winssh.shell = "powershell"
 
   config.winrm.username = "vagrant"
   config.winrm.password = "vagrant"
@@ -120,10 +121,10 @@ Vagrant.configure("2") do |config|
   #   refreshenv
   # SHELL
 
-  config.vm.provision "shell" do |s|
-    s.privileged = "true"
-    s.inline = $installSsh
-  end
+  # config.vm.provision "shell" do |s|
+  #   s.privileged = "true"
+  #   s.inline = $installSsh
+  # end
   config.vm.provision "shell" do |s|
     s.privileged = "true"
     s.inline = $installChocolateyCygwin
