@@ -9,20 +9,20 @@ on:
 
 jobs:
 
-  test:
-    name: Test on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        # os: [ubuntu-latest, ubuntu-16.04, macOS-latest]
-        os: [ubuntu-latest, macOS-latest]
-    steps:
-    - name: Check out code
-      uses: actions/checkout@v1
+  # test:
+  #   name: Test on ${{ matrix.os }}
+  #   runs-on: ${{ matrix.os }}
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       # os: [ubuntu-latest, ubuntu-16.04, macOS-latest]
+  #       os: [ubuntu-latest, macOS-latest]
+  #   steps:
+  #   - name: Check out code
+  #     uses: actions/checkout@v1
 
-    - name: Test
-      run: ./ci/runTest.sh
+  #   - name: Test
+  #     run: ./ci/runTest.sh
 
   # lint:
   #   name: Lint
@@ -43,7 +43,7 @@ jobs:
       fail-fast: false
       matrix:
         vagrant_dir:
-        - testboxes/win32
+        # - testboxes/win32
         - testboxes/win64
         # - testboxes/freebsd32
         # - testboxes/freebsd64
