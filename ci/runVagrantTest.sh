@@ -4,6 +4,7 @@ set -euo pipefail
 
 cd "$1"
 
+set VAGRANT_PREFER_SYSTEM_BIN=0
 vagrant up
 
 # Delete any old copy of micro from a previous test run
