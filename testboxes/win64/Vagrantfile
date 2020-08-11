@@ -1,11 +1,39 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-$script = <<-'SCRIPT'
+$installChocolateyCygwin = <<-'SCRIPT'
   $ErrorActionPreference = "Stop"
   iex (wget 'https://chocolatey.org/install.ps1' -UseBasicParsing)
   choco feature disable --name showDownloadProgress
   choco install cygwin --params "/NoStartMenu" --force -y
+SCRIPT
+
+$installSsh = <<-'SCRIPT'
+  Write-Host "Enable Developer Mode"
+  # Create AppModelUnlock if it doesn't exist, required for enabling Developer Mode
+  $RegistryKeyPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock"
+  if (-not(Test-Path -Path $RegistryKeyPath)) {
+    New-Item -Path $RegistryKeyPath -ItemType Directory -Force
+  }
+
+  # Add registry value to enable Developer Mode
+  New-ItemProperty -Path $RegistryKeyPath -Name AllowDevelopmentWithoutDevLicense -PropertyType DWORD -Value 1
+
+  $cap = Get-WindowsCapability -Online | ? Name -like "OpenSSH.Server*"
+  if (($cap.count -ne 0) -and ($cap[0].State -ne "Installed")) {
+    Write-Host "Install OpenSSH Server"
+    # Install the OpenSSH Server
+    Add-WindowsCapability -Online -Name OpenSSH.Server~~~~0.0.1.0
+    # Install the OpenSSHUtils helper module, which is needed to fix the ACL for ths host keys.
+    # Install-Module -Force OpenSSHUtils
+
+    Write-Host "Enable OpenSSH Server"
+    Start-Service sshd
+
+    Write-Host "Open OpenSSH Server port on firewall"
+    # Open firewall port
+    New-NetFirewallRule -Protocol TCP -LocalPort 22 -Direction Inbound -Action Allow -DisplayName SSH
+  }
 SCRIPT
 
 # All Vagrant configuration is done below. The "2" in Vagrant.configure
@@ -61,13 +89,14 @@ Vagrant.configure("2") do |config|
   # backing providers for Vagrant. These expose provider-specific options.
   # Example for VirtualBox:
   #
-  # config.vm.provider "virtualbox" do |vb|
+  config.vm.provider "virtualbox" do |vb|
     # Display the VirtualBox GUI when booting the machine
-    # vb.gui = true
+    vb.gui = false
 
     # Customize the amount of memory on the VM:
-    # vb.memory = "256"
-  # end
+    vb.memory = '2048'
+    vb.cpus = 1
+  end
   #
   # View the documentation for the provider you are using for more
   # information on available options.
@@ -93,6 +122,10 @@ Vagrant.configure("2") do |config|
 
   config.vm.provision "shell" do |s|
     s.privileged = "true"
-    s.inline = $script
+    s.inline = $installSsh
+  end
+  config.vm.provision "shell" do |s|
+    s.privileged = "true"
+    s.inline = $installChocolateyCygwin
   end
 end
