@@ -22,6 +22,7 @@ jobs:
 
     - name: Test
       run: ./ci/runTest.sh
+      shell: bash
 
   # lint:
   #   name: Lint
