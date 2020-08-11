@@ -44,7 +44,7 @@ jobs:
       matrix:
         vagrant_dir:
         - testboxes/freebsd32
-        - testboxes/freebsd64
+        # - testboxes/freebsd64
         # - testboxes/linux32
         # - testboxes/netbsd32
         # - testboxes/netbsd64
