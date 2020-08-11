@@ -5,9 +5,7 @@ $script = <<-'SCRIPT'
   $ErrorActionPreference = "Stop"
   iex (wget 'https://chocolatey.org/install.ps1' -UseBasicParsing)
   choco feature disable --name showDownloadProgress
-  choco install curl --force -y
   choco install cygwin --params "/NoStartMenu" --force -y
-  refreshenv
 SCRIPT
 
 # All Vagrant configuration is done below. The "2" in Vagrant.configure
