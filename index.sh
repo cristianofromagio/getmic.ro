@@ -28,8 +28,8 @@ machine=$(uname -m)
 if [ "${GETMICRO_PLATFORM:-x}" != "x" ]; then
   platform="$GETMICRO_PLATFORM"
 else
-  case "$(uname -s)" in
-    "Linux")
+  case "$(uname -s | tr '[:upper:]' '[:lower:]')" in
+    "linux")
       case "$machine" in
         "arm64"* | "aarch64"* ) platform='linux-arm64' ;;
         "arm"* | "aarch"*) platform='linux-arm' ;;
@@ -37,26 +37,26 @@ else
         *"64") platform='linux64' ;;
       esac
       ;;
-    "Darwin") platform='osx' ;;
-    *"FreeBSD"*)
+    "darwin") platform='osx' ;;
+    *"freebsd"*)
       case "$machine" in
         *"86") platform='freebsd32' ;;
         *"64") platform='freebsd64' ;;
       esac
       ;;
-    "OpenBSD")
+    "openbsd")
       case "$machine" in
         *"86") platform='openbsd32' ;;
         *"64") platform='openbsd64' ;;
       esac
       ;;
-    "NetBSD")
+    "netbsd")
       case "$machine" in
         *"86") platform='netbsd32' ;;
         *"64") platform='netbsd64' ;;
       esac
       ;;
-    *"_NT" | "msys"*)
+    "msys"*|"cygwin"*|"mingw"*|*"_nt"*|"win"*)
       case "$machine" in
         *"86") platform='win32' ;;
         *"64") platform='win64' ;;
