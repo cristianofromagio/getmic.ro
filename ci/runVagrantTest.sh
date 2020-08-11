@@ -3,6 +3,9 @@
 set -euo pipefail
 
 cd "$1"
+
+vagrant plugin install vagrant-reload
+
 vagrant up
 
 # Delete any old copy of micro from a previous test run
