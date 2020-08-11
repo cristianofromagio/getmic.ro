@@ -4,6 +4,8 @@ set -eu
 
 shell=${1:-bash}
 
+uname -s
+
 cat index.sh | "$shell"
 (./micro -version | grep 'Version:') || \
   (echo 'Fail: micro installation test' && exit 1)

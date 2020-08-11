@@ -56,6 +56,12 @@ else
         *"64") platform='netbsd64' ;;
       esac
       ;;
+    *"_NT" | "msys"*)
+      case "$machine" in
+        *"86") platform='win32' ;;
+        *"64") platform='win64' ;;
+      esac
+      ;;
   esac
 fi
 
