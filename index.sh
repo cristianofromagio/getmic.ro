@@ -100,15 +100,25 @@ fi
 
 TAG=$(githubLatestTag zyedidia/micro)
 
+if [ "x$platform" = "xwin64" ] || [ "x$platform" = "xwin32" ]; then
+  extension='zip'
+else
+  extension='tar.gz'
+fi
+
 printf "Latest Version: %s\n" "$TAG"
-printf "Downloading https://github.com/zyedidia/micro/releases/download/v%s/micro-%s-%s.tar.gz\n" "$TAG" "$TAG" "$platform"
+printf "Downloading https://github.com/zyedidia/micro/releases/download/v%s/micro-%s-%s.%s\n" "$TAG" "$TAG" "$platform" "$extension"
 
-curl -L "https://github.com/zyedidia/micro/releases/download/v$TAG/micro-$TAG-$platform.tar.gz" > micro.tar.gz
+curl -L "https://github.com/zyedidia/micro/releases/download/v$TAG/micro-$TAG-$platform.$extension" > "micro.$extension"
 
-tar -xvzf micro.tar.gz "micro-$TAG/micro"
+case "$extension" in
+  "zip") unzip -j "micro.$extension" -d "micro-$TAG" ;;
+  "tar.gz") tar -xvzf "micro.$extension" "micro-$TAG/micro" ;;
+esac
+
 mv "micro-$TAG/micro" ./micro
 
-rm micro.tar.gz
+rm "micro.$extension"
 rm -rf "micro-$TAG"
 
 cat <<-'EOM'
