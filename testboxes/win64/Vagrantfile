@@ -1,6 +1,8 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
+Vagrant.require_plugin "vagrant-reload"
+
 $script = <<SCRIPT
 Write-Host "Enabling WSL 2 feature."
 Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux -NoRestart
@@ -44,7 +46,7 @@ Vagrant.configure("2") do |config|
   config.windows.halt_timeout = 15
 
   config.vm.provision "shell", inline: $script, privileged: false
-  config.vm.provision "reload"
+  config.vm.provision :reload
   config.vm.provision "shell", inline: $script2, privileged: true, powershell_elevated_interactive: true
 
 end
