@@ -15,7 +15,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, ubuntu-16.04, macOS-latest]
+        # os: [ubuntu-latest, ubuntu-16.04, macOS-latest]
+        os: [ubuntu-latest, macOS-latest]
     steps:
     - name: Check out code
       uses: actions/checkout@v1
@@ -44,13 +45,13 @@ jobs:
         vagrant_dir:
         - testboxes/win32
         - testboxes/win64
-        - testboxes/freebsd32
-        - testboxes/freebsd64
-        - testboxes/linux32
-        - testboxes/netbsd32
-        - testboxes/netbsd64
-        - testboxes/openbsd32
-        - testboxes/openbsd64
+        # - testboxes/freebsd32
+        # - testboxes/freebsd64
+        # - testboxes/linux32
+        # - testboxes/netbsd32
+        # - testboxes/netbsd64
+        # - testboxes/openbsd32
+        # - testboxes/openbsd64
     steps:
     - name: Check out code
       uses: actions/checkout@v1
