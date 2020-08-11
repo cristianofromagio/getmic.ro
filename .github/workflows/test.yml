@@ -9,20 +9,19 @@ on:
 
 jobs:
 
-  # test:
-  #   name: Test on ${{ matrix.os }}
-  #   runs-on: ${{ matrix.os }}
-  #   strategy:
-  #     fail-fast: false
-  #     matrix:
-  #       # os: [ubuntu-latest, ubuntu-16.04, macOS-latest]
-  #       os: [ubuntu-latest, macOS-latest]
-  #   steps:
-  #   - name: Check out code
-  #     uses: actions/checkout@v1
+  test:
+    name: Test on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, ubuntu-16.04, macOS-latest, windows-latest]
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v1
 
-  #   - name: Test
-  #     run: ./ci/runTest.sh
+    - name: Test
+      run: ./ci/runTest.sh
 
   # lint:
   #   name: Lint
@@ -36,28 +35,28 @@ jobs:
   #       sudo apt-get update && sudo apt-get install -y shellcheck
   #       ./ci/runLint.sh
 
-  test_vagrant:
-    name: Test on ${{ matrix.vagrant_dir }} with Vagrant
-    runs-on: macos-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        vagrant_dir:
-        # - testboxes/win32
-        - testboxes/win64
-        # - testboxes/freebsd32
-        # - testboxes/freebsd64
-        # - testboxes/linux32
-        # - testboxes/netbsd32
-        # - testboxes/netbsd64
-        # - testboxes/openbsd32
-        # - testboxes/openbsd64
-    steps:
-    - name: Check out code
-      uses: actions/checkout@v1
+  # test_vagrant:
+  #   name: Test on ${{ matrix.vagrant_dir }} with Vagrant
+  #   runs-on: macos-latest
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       vagrant_dir:
+  #       - testboxes/win32
+  #       - testboxes/win64
+  #       - testboxes/freebsd32
+  #       - testboxes/freebsd64
+  #       - testboxes/linux32
+  #       - testboxes/netbsd32
+  #       - testboxes/netbsd64
+  #       - testboxes/openbsd32
+  #       - testboxes/openbsd64
+  #   steps:
+  #   - name: Check out code
+  #     uses: actions/checkout@v1
 
-    - name: Test
-      run: ./ci/runVagrantTest.sh ${{ matrix.vagrant_dir }}
+  #   - name: Test
+  #     run: ./ci/runVagrantTest.sh ${{ matrix.vagrant_dir }}
 
   # test_docker:
   #   name: Test on ${{ matrix.docker_image }} with Bash in Docker
